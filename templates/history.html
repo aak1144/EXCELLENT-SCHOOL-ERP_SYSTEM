@@ -2,42 +2,88 @@
 <html>
 
 <head>
+
+<title>Transaction History</title>
+
 <link rel="stylesheet" href="/static/style.css">
-<title>Payment History</title>
+
 </head>
 
 <body>
 
 <div class="logo-bg"></div>
 
-
 <div class="contact-info">
-
-
-| R B AKSHIT
-| akshitrathodi1999@gmail.com
-| 8147842484
+R B AKSHIT | 8147842484
 </div>
+
+<!-- SIDEBAR -->
 
 <div class="sidebar">
+
 <h3>School ERP</h3>
+
 <a href="/dashboard">Dashboard</a>
 <a href="/students">Students</a>
+<a href="/expenses">Expenses</a>
 <a href="/logout">Logout</a>
+
 </div>
+
+<!-- MAIN -->
 
 <div class="main">
 
-<h2>Payment History - {{student.name}}</h2>
+<h1>Transaction History</h1>
+
+<div
+style="
+background:white;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
+"
+>
+
+<h2>{{student.name}}</h2>
+
+<p>
+Class :
+<b>{{student.class}}</b>
+</p>
+
+<p>
+Total Fee :
+<b>₹{{student.total_fee}}</b>
+</p>
+
+<p>
+Paid :
+<b>₹{{student.paid}}</b>
+</p>
+
+<p>
+Balance :
+<b>
+₹{{student.total_fee - student.paid}}
+</b>
+</p>
+
+</div>
 
 <table class="student-table">
 
 <thead>
+
 <tr>
-<th>Date</th>
+
 <th>Receipt</th>
-<th>Amount Paid</th>
+<th>Amount</th>
+<th>Date</th>
+
 </tr>
+
 </thead>
 
 <tbody>
@@ -45,9 +91,15 @@
 {% for p in payments %}
 
 <tr>
-<td>{{p.date}}</td>
+
 <td>{{p.receipt}}</td>
-<td>₹{{p.total_amount}}</td>
+
+<td>
+₹{{p.amount}}
+</td>
+
+<td>{{p.date}}</td>
+
 </tr>
 
 {% endfor %}

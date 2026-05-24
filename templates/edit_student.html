@@ -1,22 +1,41 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
+<title>Edit Student</title>
 
 <link rel="stylesheet" href="/static/style.css">
 
 <script>
+
 function calculateTotal(){
 
-let admission = parseInt(document.getElementById("admission").value) || 0;
-let tuition = parseInt(document.getElementById("tuition").value) || 0;
-let bus = parseInt(document.getElementById("bus").value) || 0;
-let computer = parseInt(document.getElementById("computer").value) || 0;
-let other = parseInt(document.getElementById("other").value) || 0;
+let admission =
+parseInt(document.getElementById("admission").value) || 0
+
+let tuition =
+parseInt(document.getElementById("tuition").value) || 0
+
+let bus =
+parseInt(document.getElementById("bus").value) || 0
+
+let computer =
+parseInt(document.getElementById("computer").value) || 0
+
+let other =
+parseInt(document.getElementById("other").value) || 0
 
 document.getElementById("total_fee").value =
-admission + tuition + bus + computer + other;
+
+admission +
+tuition +
+bus +
+computer +
+other
 
 }
+
 </script>
 
 </head>
@@ -25,119 +44,185 @@ admission + tuition + bus + computer + other;
 
 <div class="logo-bg"></div>
 
-<div class="sidebar">
-    <h3>School ERP</h3>
-
-    <a href="/dashboard">Dashboard</a>
-    <a href="/students">Students</a>
+<div class="contact-info">
+R B AKSHIT | 8147842484
 </div>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h3>School ERP</h3>
+
+<a href="/dashboard">Dashboard</a>
+<a href="/students">Students</a>
+<a href="/expenses">Expenses</a>
+<a href="/logout">Logout</a>
+
+</div>
+
+<!-- MAIN -->
 
 <div class="main">
 
-<h2>Edit Student</h2>
+<h1>Edit Student</h1>
 
-<form method="post" class="student-form">
+<form
+method="post"
+class="student-form"
+>
 
-    <div class="form-group">
-        <label>Admission No</label>
-        <input 
-            name="adm"
-            placeholder="Enter Admission Number"
-            value="{{student.admission}}">
-    </div>
+<div class="form-group">
 
-    <div class="form-group">
-        <label>Student Name</label>
-        <input 
-            name="name"
-            placeholder="Enter Student Name"
-            value="{{student.name}}">
-    </div>
+<label>Admission Number</label>
 
-    <div class="form-group">
-        <label>Class</label>
-        <input 
-            name="class"
-            placeholder="Enter Class"
-            value="{{student.class}}">
-    </div>
+<input
+type="text"
+name="adm"
+value="{{student.admission}}"
+required
+>
 
-    <div class="form-group">
-        <label>Parent Name</label>
-        <input 
-            name="parent"
-            placeholder="Enter Parent Name"
-            value="{{student.parent}}">
-    </div>
+</div>
 
-    <div class="form-group">
-        <label>Phone Number</label>
-        <input 
-            name="phone"
-            placeholder="Enter Phone Number"
-            value="{{student.phone}}">
-    </div>
+<div class="form-group">
 
-    <div class="form-group">
-        <label>Admission Fee ₹</label>
-        <input 
-            id="admission"
-            name="admission_fee"
-            placeholder="Enter Admission Fee"
-            value="{{student.admission_fee}}"
-            onkeyup="calculateTotal()">
-    </div>
+<label>Student Name</label>
 
-    <div class="form-group">
-        <label>Tuition Fee ₹</label>
-        <input 
-            id="tuition"
-            name="tuition_fee"
-            placeholder="Enter Tuition Fee"
-            value="{{student.tuition_fee}}"
-            onkeyup="calculateTotal()">
-    </div>
+<input
+type="text"
+name="name"
+value="{{student.name}}"
+required
+>
 
-    <div class="form-group">
-        <label>Bus Fee ₹</label>
-        <input 
-            id="bus"
-            name="bus_fee"
-            placeholder="Enter Bus Fee"
-            value="{{student.bus_fee}}"
-            onkeyup="calculateTotal()">
-    </div>
+</div>
 
-    <div class="form-group">
-        <label>Computer Fee ₹</label>
-        <input 
-            id="computer"
-            name="computer_fee"
-            placeholder="Enter Computer Fee"
-            value="{{student.computer_fee}}"
-            onkeyup="calculateTotal()">
-    </div>
+<div class="form-group">
 
-    <div class="form-group">
-        <label>Other Fee ₹</label>
-        <input 
-            id="other"
-            name="other_fee"
-            placeholder="Enter Other Fee"
-            value="{{student.other_fee}}"
-            onkeyup="calculateTotal()">
-    </div>
+<label>Class</label>
 
-    <div class="form-group">
-        <label>Total Fee ₹</label>
-        <input 
-            id="total_fee"
-            placeholder="Total Fee"
-            value="{{student.total_fee}}"
-            readonly>
-    </div>
+<input
+type="text"
+name="class"
+value="{{student.class}}"
+required
+>
 
-    <button type="submit">Update Student</button>
+</div>
+
+<div class="form-group">
+
+<label>Parent Name</label>
+
+<input
+type="text"
+name="parent"
+value="{{student.parent}}"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Phone Number</label>
+
+<input
+type="text"
+name="phone"
+value="{{student.phone}}"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Admission Fee ₹</label>
+
+<input
+type="number"
+id="admission"
+name="admission_fee"
+value="{{student.admission_fee}}"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Tuition Fee ₹</label>
+
+<input
+type="number"
+id="tuition"
+name="tuition_fee"
+value="{{student.tuition_fee}}"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Bus Fee ₹</label>
+
+<input
+type="number"
+id="bus"
+name="bus_fee"
+value="{{student.bus_fee}}"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Computer Fee ₹</label>
+
+<input
+type="number"
+id="computer"
+name="computer_fee"
+value="{{student.computer_fee}}"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Other Fee ₹</label>
+
+<input
+type="number"
+id="other"
+name="other_fee"
+value="{{student.other_fee}}"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Total Fee ₹</label>
+
+<input
+type="number"
+id="total_fee"
+value="{{student.total_fee}}"
+readonly
+>
+
+</div>
+
+<button type="submit">
+
+UPDATE STUDENT
+
+</button>
 
 </form>
 

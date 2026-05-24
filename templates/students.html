@@ -1,129 +1,383 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
+<title>Students</title>
+
 <link rel="stylesheet" href="/static/style.css">
 
 <script>
-function search(){
-let v = document.getElementById('search').value.toLowerCase();
-document.querySelectorAll('tbody tr').forEach(r=>{
-r.style.display = r.innerText.toLowerCase().includes(v) ? '' : 'none';
+
+function searchStudent(){
+
+let value =
+document.getElementById("search")
+.value
+.toLowerCase()
+
+let rows =
+document.querySelectorAll("tbody tr")
+
+rows.forEach(row=>{
+
+row.style.display =
+row.innerText.toLowerCase().includes(value)
+? ""
+: "none"
+
 })
+
 }
 
 function calculateTotal(){
-let admission = parseInt(document.getElementById("admission").value) || 0;
-let tuition = parseInt(document.getElementById("tuition").value) || 0;
-let bus = parseInt(document.getElementById("bus").value) || 0;
-let computer = parseInt(document.getElementById("computer").value) || 0;
-let other = parseInt(document.getElementById("other").value) || 0;
+
+let admission =
+parseInt(document.getElementById("admission").value) || 0
+
+let tuition =
+parseInt(document.getElementById("tuition").value) || 0
+
+let bus =
+parseInt(document.getElementById("bus").value) || 0
+
+let computer =
+parseInt(document.getElementById("computer").value) || 0
+
+let other =
+parseInt(document.getElementById("other").value) || 0
 
 document.getElementById("total_fee").value =
-admission + tuition + bus + computer + other;
+
+admission +
+tuition +
+bus +
+computer +
+other
+
 }
+
 </script>
 
-<title>Students</title>
 </head>
 
 <body>
 
-<div class="contact-info">
-| R B AKSHIT | akshitrathodi1999@gmail.com | 8147842484
-</div>
-
 <div class="logo-bg"></div>
 
+<div class="contact-info">
+R B AKSHIT | 8147842484
+</div>
+
+<!-- SIDEBAR -->
+
 <div class="sidebar">
+
 <h3>School ERP</h3>
+
 <a href="/dashboard">Dashboard</a>
 <a href="/students">Students</a>
+<a href="/expenses">Expenses</a>
 <a href="/logout">Logout</a>
+
 </div>
+
+<!-- MAIN -->
 
 <div class="main">
 
-<h2>Students Management</h2>
+<h1>Students Management</h1>
+
+<!-- FLASH -->
+
 {% with messages = get_flashed_messages() %}
 {% if messages %}
-    {% for msg in messages %}
-        <div class="success-message">
-            {{ msg }}
-        </div>
-    {% endfor %}
+
+<div
+style="
+background:#16a34a;
+color:white;
+padding:12px;
+border-radius:10px;
+margin-bottom:20px;
+"
+>
+
+{{messages[0]}}
+
+</div>
+
 {% endif %}
 {% endwith %}
-<input id="search" onkeyup="search()" placeholder="Search Student..." class="search-box">
 
-<div style="margin-bottom:15px;">
-<a href="/students" class="export-btn">All</a>
-<a href="/students?filter=pending" class="delete-btn">Pending Fees</a>
-<a href="/students?filter=paid" class="pay-btn">Fully Paid</a>
+<!-- SEARCH -->
+
+<input
+type="text"
+id="search"
+class="search-box"
+placeholder="Search Student..."
+onkeyup="searchStudent()"
+>
+
+<!-- FORM -->
+
+<h2>Add Student</h2>
+
+<form
+method="post"
+class="student-form"
+>
+
+<div class="form-group">
+
+<label>Admission Number</label>
+
+<input
+type="text"
+name="adm"
+required
+>
+
 </div>
 
-<h3>ADD NEW STUDENT</h3>
+<div class="form-group">
 
-<!-- ✅ FIXED FORM -->
-<form method="post" class="student-form">
+<label>Student Name</label>
 
-<input name="adm" placeholder="Admission Number" required>
-<input name="name" placeholder="Student Name" required>
-<input name="class" placeholder="Class" required>
-<input name="parent" placeholder="Parent Name">
-<input name="phone" placeholder="Phone">
-<div>
-<h3>FEE STRUCTURE</h3>
+<input
+type="text"
+name="name"
+required
+>
 
-<input id="admission" name="admission_fee" placeholder="Admission Fee" onkeyup="calculateTotal()">
-<span><input id="tuition" name="tuition_fee" placeholder="Tuition Fee" onkeyup="calculateTotal()"></span>
-<br>
-<input id="bus" name="bus_fee" placeholder="Bus Fee" onkeyup="calculateTotal()">
-<span><input id="computer" name="computer_fee" placeholder="Computer Fee" onkeyup="calculateTotal()"></span>
-<input id="other" name="other_fee" placeholder="Other Fee" onkeyup="calculateTotal()">
-
-
-
-<!-- ✅ IMPORTANT -->
-<br>
-<br>
- <th><b>TOTAL FEE:</b></th>
-
- <br>
-
-<input id="total_fee" name="total_fee" placeholder="Total Fee (Auto)" readonly>
-<button type="submit">ADD STUDENT</button>
 </div>
-<br>
+
+<div class="form-group">
+
+<label>Class</label>
+
+<input
+type="text"
+name="class"
+required
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Parent Name</label>
+
+<input
+type="text"
+name="parent"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Phone Number</label>
+
+<input
+type="text"
+name="phone"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Admission Fee ₹</label>
+
+<input
+type="number"
+id="admission"
+name="admission_fee"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Tuition Fee ₹</label>
+
+<input
+type="number"
+id="tuition"
+name="tuition_fee"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Bus Fee ₹</label>
+
+<input
+type="number"
+id="bus"
+name="bus_fee"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Computer Fee ₹</label>
+
+<input
+type="number"
+id="computer"
+name="computer_fee"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Other Fee ₹</label>
+
+<input
+type="number"
+id="other"
+name="other_fee"
+onkeyup="calculateTotal()"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>Total Fee ₹</label>
+
+<input
+type="number"
+id="total_fee"
+readonly
+>
+
+</div>
+
+<button type="submit">
+
+ADD STUDENT
+
+</button>
+
 </form>
 
 <!-- TABLE -->
-<br>
+
+<h2>Students List</h2>
+
 <table class="student-table">
 
+<thead>
+
 <tr>
-<th>Name</th><th>Class</th><th>Total</th><th>Paid</th><th>Balance</th>
-<th>Pay</th><th>History</th><th>Edit</th><th>Delete</th>
+
+<th>Name</th>
+<th>Class</th>
+<th>Total</th>
+<th>Paid</th>
+<th>Balance</th>
+<th>Pay</th>
+<th>History</th>
+<th>Edit</th>
+<th>Delete</th>
+
 </tr>
+
+</thead>
 
 <tbody>
-{% for s in students %}
-<tr class="{% if (s.total_fee - s.paid) > 5000 %}high-due{% endif %}">
-<td>{{s.name}}</td>
-<td>{{s.class}}</td>
-<td>₹{{s.total_fee}}</td>
-<td>₹{{s.paid}}</td>
-<td>₹{{s.total_fee - s.paid}}</td>
 
-<td><a class="pay-btn" href="/pay/{{s.id}}">Pay</a></td>
-<td><a class="export-btn" href="/history/{{s.id}}">Transaction</a></td>
-<td><a class="edit-btn" href="/edit/{{s.id}}">Edit</a></td>
-<td><a class="delete-btn" href="/delete/{{s.id}}">Delete</a></td>
+{% for s in students %}
+
+<tr class="{% if (s.total_fee - s.paid) > 5000 %}high-due{% endif %}">
+
+<td>{{s.name}}</td>
+
+<td>{{s.class}}</td>
+
+<td>₹{{s.total_fee}}</td>
+
+<td>₹{{s.paid}}</td>
+
+<td>
+
+₹{{s.total_fee - s.paid}}
+
+</td>
+
+<td>
+
+<a
+href="/pay/{{s._id}}"
+class="pay-btn"
+>
+
+Pay
+
+</a>
+
+</td>
+
+<td>
+
+<a
+href="/history/{{s._id}}"
+class="export-btn"
+>
+
+Transactions
+
+</a>
+
+</td>
+
+<td>
+
+<a
+href="/edit/{{s._id}}"
+class="edit-btn"
+>
+
+Edit
+
+</a>
+
+</td>
+
+<td>
+
+<a
+href="/delete/{{s._id}}"
+class="delete-btn"
+onclick="return confirm('Delete Student?')"
+>
+
+Delete
+
+</a>
+
+</td>
+
 </tr>
+
 {% endfor %}
+
 </tbody>
 
 </table>
 
 </div>
+
 </body>
 </html>

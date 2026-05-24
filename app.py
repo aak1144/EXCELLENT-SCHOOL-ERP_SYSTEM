@@ -1,158 +1,60 @@
-from flask import Flask, render_template, request, redirect, session, g, send_file, flash
-import sqlite3
+from flask import Flask, render_template, request, redirect, session, flash, send_file
+from pymongo import MongoClient
+from werkzeug.security import generate_password_hash, check_password_hash
+from bson.objectid import ObjectId
+import pandas as pd
 import datetime
 import os
-import pandas as pd
-import openpyxl
-
-from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "school_erp_secure_key_2026"
+app.secret_key = "school_erp_secret"
 
-DB = os.path.join(os.getcwd(), "school.db")
+# ---------------- MONGODB ----------------
 
+client = MongoClient(os.environ.get("MONGO_URI"))
 
-# ---------------- SAFE INTEGER ----------------
-def safe_int(v):
-    try:
-        return int(v)
-    except:
-        return 0
+db = client["school_erp"]
 
+students_collection = db["students"]
+payments_collection = db["payments"]
+expenses_collection = db["expenses"]
+admins_collection = db["admins"]
 
-# ---------------- DATABASE ----------------
-def get_db():
+# ---------------- DEFAULT ADMIN ----------------
 
-    db = getattr(g, "_database", None)
+if admins_collection.count_documents({}) == 0:
 
-    if db is None:
-        db = g._database = sqlite3.connect(DB)
-        db.row_factory = sqlite3.Row
-
-    return db
-
-
-@app.teardown_appcontext
-def close_db(exception):
-
-    db = getattr(g, "_database", None)
-
-    if db is not None:
-        db.close()
-
-
-# ---------------- INIT DATABASE ----------------
-def init_db():
-
-    db = sqlite3.connect(DB)
-    db.execute("PRAGMA journal_mode=WAL")
-
-    c = db.cursor()
-
-    # ADMINS
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS admins(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        password TEXT
-    )
-    """)
-
-    # STUDENTS
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS students(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        admission TEXT,
-        name TEXT,
-        class TEXT,
-        parent TEXT,
-        phone TEXT,
-        admission_fee INTEGER,
-        tuition_fee INTEGER,
-        bus_fee INTEGER,
-        computer_fee INTEGER,
-        other_fee INTEGER,
-        total_fee INTEGER,
-        paid INTEGER DEFAULT 0
-    )
-    """)
-
-    # PAYMENTS
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS payments(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        receipt TEXT,
-        student_id INTEGER,
-        total_amount INTEGER,
-        date TEXT
-    )
-    """)
-
-    # EXPENSES
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS expenses(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        amount INTEGER,
-        category TEXT,
-        date TEXT
-    )
-    """)
-
-    # DEFAULT ADMIN
-    if not c.execute("SELECT * FROM admins").fetchone():
-
-        c.execute(
-            "INSERT INTO admins VALUES(NULL,?,?)",
-            ("admin", generate_password_hash("admin123"))
-        )
-
-    db.commit()
-    db.close()
-
-
-init_db()
-
-
-# ---------------- RECEIPT NUMBER ----------------
-def next_receipt():
-
-    db = get_db()
-
-    r = db.execute("SELECT MAX(id) FROM payments").fetchone()[0]
-
-    r = 1 if r is None else r + 1
-
-    return f"REC-{str(r).zfill(5)}"
-
+    admins_collection.insert_one({
+        "username": "admin",
+        "password": generate_password_hash("admin123")
+    })
 
 # ---------------- LOGIN ----------------
+
 @app.route("/", methods=["GET", "POST"])
 def login():
 
     if request.method == "POST":
 
-        db = get_db()
+        username = request.form["username"]
+        password = request.form["password"]
 
-        user = db.execute(
-            "SELECT * FROM admins WHERE username=?",
-            (request.form["username"],)
-        ).fetchone()
+        user = admins_collection.find_one({
+            "username": username
+        })
 
-        if user and check_password_hash(
-            user["password"],
-            request.form["password"]
-        ):
+        if user and check_password_hash(user["password"], password):
 
-            session["user"] = request.form["username"]
+            session["user"] = username
 
             return redirect("/dashboard")
 
+        flash("Invalid Login")
+
     return render_template("login.html")
 
-
 # ---------------- LOGOUT ----------------
+
 @app.route("/logout")
 def logout():
 
@@ -160,76 +62,55 @@ def logout():
 
     return redirect("/")
 
-
 # ---------------- DASHBOARD ----------------
+
 @app.route("/dashboard")
 def dashboard():
 
     if "user" not in session:
         return redirect("/")
 
-    db = get_db()
+    students = list(students_collection.find())
 
-    students = db.execute(
-        "SELECT * FROM students"
-    ).fetchall()
+    collected = 0
+    pending = 0
+    expenses = 0
 
-    collected = db.execute(
-        "SELECT SUM(total_amount) t FROM payments"
-    ).fetchone()["t"] or 0
+    for p in payments_collection.find():
+        collected += int(p.get("amount", 0))
 
-    expenses = db.execute(
-        "SELECT SUM(amount) t FROM expenses"
-    ).fetchone()["t"] or 0
+    for e in expenses_collection.find():
+        expenses += int(e.get("amount", 0))
 
-    pending = sum(
-        safe_int(s["total_fee"]) - safe_int(s["paid"])
-        for s in students
-    )
-
-    top_pending = db.execute("""
-    SELECT *,
-    (total_fee - paid) as due
-    FROM students
-    WHERE total_fee > paid
-    ORDER BY due DESC
-    LIMIT 3
-    """).fetchall()
-
-    top_expenses = db.execute("""
-    SELECT *
-    FROM expenses
-    ORDER BY amount DESC
-    LIMIT 3
-    """).fetchall()
+    for s in students:
+        pending += (
+            int(s.get("total_fee", 0))
+            - int(s.get("paid", 0))
+        )
 
     return render_template(
         "dashboard.html",
         students=len(students),
         collected=collected,
-        expenses=expenses,
         pending=pending,
-        top_pending=top_pending,
-        top_expenses=top_expenses
+        expenses=expenses
     )
 
-
 # ---------------- STUDENTS ----------------
+
 @app.route("/students", methods=["GET", "POST"])
 def students():
 
     if "user" not in session:
         return redirect("/")
 
-    db = get_db()
-
     if request.method == "POST":
 
-        admission_fee = safe_int(request.form.get("admission_fee"))
-        tuition_fee = safe_int(request.form.get("tuition_fee"))
-        bus_fee = safe_int(request.form.get("bus_fee"))
-        computer_fee = safe_int(request.form.get("computer_fee"))
-        other_fee = safe_int(request.form.get("other_fee"))
+        admission_fee = int(request.form.get("admission_fee") or 0)
+        tuition_fee = int(request.form.get("tuition_fee") or 0)
+        bus_fee = int(request.form.get("bus_fee") or 0)
+        computer_fee = int(request.form.get("computer_fee") or 0)
+        other_fee = int(request.form.get("other_fee") or 0)
 
         total = (
             admission_fee +
@@ -239,110 +120,235 @@ def students():
             other_fee
         )
 
-        db.execute("""
-        INSERT INTO students
-        (
-            admission,name,class,parent,phone,
-            admission_fee,tuition_fee,bus_fee,
-            computer_fee,other_fee,total_fee
-        )
-        VALUES(?,?,?,?,?,?,?,?,?,?,?)
-        """,
-        (
-            request.form["adm"],
-            request.form["name"],
-            request.form["class"],
-            request.form["parent"],
-            request.form["phone"],
-            admission_fee,
-            tuition_fee,
-            bus_fee,
-            computer_fee,
-            other_fee,
-            total
-        ))
+        students_collection.insert_one({
 
-        db.commit()
+            "admission": request.form["adm"],
+            "name": request.form["name"],
+            "class": request.form["class"],
+            "parent": request.form["parent"],
+            "phone": request.form["phone"],
+
+            "admission_fee": admission_fee,
+            "tuition_fee": tuition_fee,
+            "bus_fee": bus_fee,
+            "computer_fee": computer_fee,
+            "other_fee": other_fee,
+
+            "total_fee": total,
+            "paid": 0
+        })
 
         flash("Student Added Successfully!")
 
-    data = db.execute("""
-    SELECT *
-    FROM students
-    ORDER BY id DESC
-    """).fetchall()
+        return redirect("/students")
+
+    students = list(
+        students_collection.find().sort("_id", -1)
+    )
 
     return render_template(
         "students.html",
-        students=data
+        students=students
     )
-
 
 # ---------------- DELETE STUDENT ----------------
-@app.route("/delete/<int:id>")
+
+@app.route("/delete/<id>")
 def delete_student(id):
 
-    if "user" not in session:
-        return redirect("/")
+    students_collection.delete_one({
+        "_id": ObjectId(id)
+    })
 
-    db = get_db()
-
-    db.execute(
-        "DELETE FROM payments WHERE student_id=?",
-        (id,)
-    )
-
-    db.execute(
-        "DELETE FROM students WHERE id=?",
-        (id,)
-    )
-
-    db.commit()
+    payments_collection.delete_many({
+        "student_id": id
+    })
 
     flash("Student Deleted Successfully!")
 
     return redirect("/students")
 
+# ---------------- PAYMENT ----------------
 
-# ---------------- EXPORT EXCEL ----------------
-@app.route("/export_transactions")
-def export_transactions():
+@app.route("/pay/<id>", methods=["GET", "POST"])
+def pay(id):
+
+    student = students_collection.find_one({
+        "_id": ObjectId(id)
+    })
+
+    if request.method == "POST":
+
+        amount = int(request.form["amount"])
+
+        receipt = "REC-" + str(
+            payments_collection.count_documents({}) + 1
+        ).zfill(5)
+
+        payments_collection.insert_one({
+
+            "receipt": receipt,
+            "student_id": id,
+            "amount": amount,
+            "date": str(datetime.date.today())
+        })
+
+        students_collection.update_one(
+            {"_id": ObjectId(id)},
+            {
+                "$inc": {
+                    "paid": amount
+                }
+            }
+        )
+
+        return redirect("/receipt/" + receipt)
+
+    balance = (
+        int(student["total_fee"])
+        - int(student["paid"])
+    )
+
+    return render_template(
+        "payment.html",
+        student=student,
+        balance=balance
+    )
+
+# ---------------- RECEIPT ----------------
+
+@app.route("/receipt/<receipt>")
+def receipt(receipt):
+
+    payment = payments_collection.find_one({
+        "receipt": receipt
+    })
+
+    student = students_collection.find_one({
+        "_id": ObjectId(payment["student_id"])
+    })
+
+    balance = (
+        int(student["total_fee"])
+        - int(student["paid"])
+    )
+
+    return render_template(
+        "receipt.html",
+        p=payment,
+        s=student,
+        balance=balance
+    )
+
+# ---------------- HISTORY ----------------
+
+@app.route("/history/<id>")
+def history(id):
+
+    student = students_collection.find_one({
+        "_id": ObjectId(id)
+    })
+
+    payments = list(
+        payments_collection.find({
+            "student_id": id
+        })
+    )
+
+    return render_template(
+        "history.html",
+        student=student,
+        payments=payments
+    )
+# ---------------- EXPENSES ----------------
+
+@app.route("/expenses", methods=["GET", "POST"])
+def expenses():
 
     if "user" not in session:
         return redirect("/")
 
-    db = get_db()
+    if request.method == "POST":
 
-    data = db.execute("""
-    SELECT students.name,
-           students.class,
-           payments.receipt,
-           payments.total_amount,
-           payments.date
-    FROM payments
-    JOIN students
-    ON payments.student_id = students.id
-    ORDER BY payments.id DESC
-    """).fetchall()
+        expenses_collection.insert_one({
 
-    df = pd.DataFrame(data, columns=[
-        "Student Name",
-        "Class",
-        "Receipt Number",
-        "Amount Paid",
-        "Date"
-    ])
+            "title": request.form["title"],
+            "amount": int(request.form["amount"]),
+            "category": request.form["category"],
+            "date": str(datetime.date.today())
 
-    filename = "transactions.xlsx"
+        })
 
-    df.to_excel(filename, index=False)
+        flash("Expense Added Successfully!")
 
-    return send_file(
-        filename,
-        as_attachment=True
+        return redirect("/expenses")
+
+    expenses = list(
+        expenses_collection.find().sort("_id", -1)
     )
 
+    return render_template(
+        "expenses.html",
+        expenses=expenses
+    )
+    # ---------------- EDIT STUDENT ----------------
 
+@app.route("/edit/<id>", methods=["GET", "POST"])
+def edit_student(id):
+
+    student = students_collection.find_one({
+        "_id": ObjectId(id)
+    })
+
+    if request.method == "POST":
+
+        admission_fee = int(request.form.get("admission_fee") or 0)
+        tuition_fee = int(request.form.get("tuition_fee") or 0)
+        bus_fee = int(request.form.get("bus_fee") or 0)
+        computer_fee = int(request.form.get("computer_fee") or 0)
+        other_fee = int(request.form.get("other_fee") or 0)
+
+        total = (
+            admission_fee +
+            tuition_fee +
+            bus_fee +
+            computer_fee +
+            other_fee
+        )
+
+        students_collection.update_one(
+
+            {"_id": ObjectId(id)},
+
+            {
+                "$set": {
+
+                    "admission": request.form["adm"],
+                    "name": request.form["name"],
+                    "class": request.form["class"],
+                    "parent": request.form["parent"],
+                    "phone": request.form["phone"],
+
+                    "admission_fee": admission_fee,
+                    "tuition_fee": tuition_fee,
+                    "bus_fee": bus_fee,
+                    "computer_fee": computer_fee,
+                    "other_fee": other_fee,
+
+                    "total_fee": total
+                }
+            }
+        )
+
+        flash("Student Updated Successfully!")
+
+        return redirect("/students")
+
+    return render_template(
+        "edit_student.html",
+        student=student
+    )
 # ---------------- RUN ----------------
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

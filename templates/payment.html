@@ -1,40 +1,86 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<link rel="stylesheet" href="/static/style.css">
+
 <title>Payment</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
 </head>
 
 <body>
 
 <div class="logo-bg"></div>
 
+<div class="contact-info">
+R B AKSHIT | 8147842484
+</div>
+
+<!-- SIDEBAR -->
+
 <div class="sidebar">
+
 <h3>School ERP</h3>
+
 <a href="/dashboard">Dashboard</a>
 <a href="/students">Students</a>
+<a href="/expenses">Expenses</a>
 <a href="/logout">Logout</a>
+
 </div>
+
+<!-- MAIN -->
 
 <div class="main">
 
-<h2>Payment - {{student.name}}</h2>
+<h1>Student Payment</h1>
 
-<p><b>Total Fee :</b> ₹{{student.total_fee}}</p>
-<p><b>Total Paid :</b> ₹{{student.paid}}</p>
-<p><b>Remaining Balance :</b> ₹{{balance}}</p>
+<div class="payment-form">
 
-<form method="post" class="payment-form">
+<h2>{{student.name}}</h2>
 
-<label><b>Today's Payment Amount</b></label>
-<input type="number" name="amount" required>
+<p>
+Class :
+<b>{{student.class}}</b>
+</p>
 
-<label>Date</label>
-<input type="date" name="date">
+<p>
+Total Fee :
+<b>₹{{student.total_fee}}</b>
+</p>
 
-<button type="submit">Submit Payment</button>
+<p>
+Paid :
+<b>₹{{student.paid}}</b>
+</p>
+
+<p>
+Balance :
+<b>₹{{balance}}</b>
+</p>
+
+<form method="post">
+
+<input
+type="number"
+name="amount"
+placeholder="Enter Amount"
+required
+>
+
+<button
+type="submit"
+class="submit-btn"
+>
+
+PAY NOW
+
+</button>
 
 </form>
+
+</div>
 
 </div>
 

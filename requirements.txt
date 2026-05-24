@@ -1,8 +1,8 @@
 flask
-werkzeug
 gunicorn
+pymongo
+dnspython
 pandas
 openpyxl
 reportlab
-pymongo
-dnspython
+werkzeug
