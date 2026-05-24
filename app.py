@@ -11,7 +11,11 @@ app.secret_key = "school_erp_secret"
 
 # ---------------- MONGODB ----------------
 
-client = MongoClient(os.environ.get("MONGO_URI"))
+client = MongoClient(
+    os.environ.get("MONGO_URI"),
+    tls=True,
+    tlsAllowInvalidCertificates=True
+)
 
 db = client["school_erp"]
 
