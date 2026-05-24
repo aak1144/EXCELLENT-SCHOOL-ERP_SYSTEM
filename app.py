@@ -368,12 +368,69 @@ def export_transactions():
         filename,
         as_attachment=True
     )
+    import sqlite3
+import os
+
+DB = "school.db"
+
+def init_db():
+
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+
+    # ADMINS
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS admins(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        password TEXT
+    )
+    """)
+
+    # STUDENTS
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS students(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        admission TEXT,
+        name TEXT,
+        class TEXT,
+        parent TEXT,
+        phone TEXT,
+        admission_fee INTEGER,
+        tuition_fee INTEGER,
+        bus_fee INTEGER,
+        computer_fee INTEGER,
+        other_fee INTEGER,
+        total_fee INTEGER,
+        paid INTEGER DEFAULT 0
+    )
+    """)
+
+    # PAYMENTS
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS payments(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER,
+        receipt TEXT,
+        total_amount INTEGER,
+        date TEXT
+    )
+    """)
+
+    # EXPENSES
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS expenses(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        category TEXT,
+        amount INTEGER
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+init_db()
 # ---------------- RUN ----------------
-<<<<<<< HEAD
-if __name__=="__main__":
-    webbrowser.open("http://127.0.0.1:5000")
-    app.run(debug=False)
-=======
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
->>>>>>> 2960e1dd816520dde9c4f831fe6b259655cc4576
