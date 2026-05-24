@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/style.css">
+<title>Payment History</title>
+</head>
+
+<body>
+
+<div class="logo-bg"></div>
+
+
+<div class="contact-info">
+
+
+| R B AKSHIT
+| akshitrathodi1999@gmail.com
+| 8147842484
+</div>
+
+<div class="sidebar">
+<h3>School ERP</h3>
+<a href="/dashboard">Dashboard</a>
+<a href="/students">Students</a>
+<a href="/logout">Logout</a>
+</div>
+
+<div class="main">
+
+<h2>Payment History - {{student.name}}</h2>
+
+<table class="student-table">
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Receipt</th>
+<th>Amount Paid</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for p in payments %}
+
+<tr>
+<td>{{p.date}}</td>
+<td>{{p.receipt}}</td>
+<td>₹{{p.total_amount}}</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</body>
+</html>

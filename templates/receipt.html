@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/style.css">
+<title>Fee Receipt</title>
+
+<script>
+function printReceipt(){
+    window.print();
+}
+</script>
+
+</head>
+
+<body>
+
+<div class="logo-bg"></div>
+
+<div class="sidebar">
+<h3>School ERP</h3>
+<a href="/dashboard">Dashboard</a>
+<a href="/students">Students</a>
+<a href="/logout">Logout</a>
+</div>
+
+<div class="main">
+
+<table class="receipt-print-table">
+
+<tr>
+
+<!-- ================= SCHOOL-COPY  ================= -->
+
+<td>
+
+<div class="copy-label">SCHOOL-COPY</div>
+
+<div class="receipt-box">
+
+<div class="receipt-header">
+
+<div class="school-header">
+
+<img src="/static/BAVS.jpg" class="school-logo">
+
+<div>
+<h1 class="school-title">EXCELLENT ENGLISH MEDIUM SCHOOL</h1>
+<p class="school-address">Kalsapura Road, Gadag - 582101</p>
+</div>
+
+</div>
+
+</div>
+
+<hr>
+
+<h3 class="receipt-title">FEE RECEIPT</h3>
+
+<table class="receipt-table">
+
+<tr><th>Receipt No</th><td><b>{{p.receipt}}</b></td></tr>
+<tr><th>Date</th><td>{{p.date}}</td></tr>
+<tr><th>Student Name</th><td><b>{{s.name}}</b></td></tr>
+<tr><th>Admission No</th><td>{{s.admission}}</td></tr>
+<tr><th>Class</th><td>{{s.class}}</td></tr>
+</table>
+
+
+</div>
+<div class="receipt-box" style="position:relative;">
+    <div class="watermark-container">
+    <div class="watermark">B . A . V . S</div>
+    <div class="watermark">B . A . V . S</div>
+    <div class="watermark">B . A . V . S</div>
+</div>
+<h3 class="receipt-title">Fee Structure</h3>
+
+<table class="receipt-table">
+
+<tr><th>Admission Fee</th><td>₹{{s.admission_fee}}</td></tr>
+<tr><th>Tuition Fee</th><td>₹{{s.tuition_fee}}</td></tr>
+<tr><th>Bus Fee</th><td>₹{{s.bus_fee}}</td></tr>
+<tr><th>Computer Fee</th><td>₹{{s.computer_fee}}</td></tr>
+<tr><th>Other Fee</th><td>₹{{s.other_fee}}</td></tr>
+
+<tr>
+<th>Total Fee</th>
+<td><b>₹{{s.total_fee}}</b></td>
+</tr>
+
+</table>
+
+<h3 class="receipt-title">Payment Details</h3>
+
+<table class="receipt-table">
+
+<tr><th>Paid Today</th><td>₹{{p.total_amount}}</td></tr>
+<tr><th>Total Paid</th><td>₹{{s.paid}}</td></tr>
+
+<tr>
+<th>Remaining Balance</th>
+<td><b>
+
+{% if balance == 0 %}</b>
+<b style="color:green;">COMPLETE PAYMENT DONE</b>
+{% else %}
+₹{{balance}}
+{% endif %}
+</td>
+</tr>
+
+</table>
+<div class="receipt-terms">
+
+<h4>Terms & Conditions</h4>
+
+<ul>
+<li>Fees once paid are non-refundable under any circumstances.</li>
+<li>This receipt must be preserved carefully.</li>
+<li>The school will not be responsible for loss or damage of this receipt.</li>
+<li>All payments are subject to school rules and regulations.</li>
+
+</ul>
+<div class="receipt-footer">
+<p>Authorized Signature & Seal</p>
+</div>
+
+</div>
+
+</td>
+
+
+</tr>
+
+</table>
+
+
+<div class="receipt-buttons">
+<button onclick="printReceipt()" class="print-btn">Print Receipt</button>
+</div>
+
+</div>
+
+</body>
+</html>

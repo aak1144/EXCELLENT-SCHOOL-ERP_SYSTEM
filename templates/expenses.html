@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css">
+<title>Expenses</title>
+</head>
+
+<body>
+
+
+<div class="contact-info">
+
+| R B AKSHIT
+| akshitrathodi1999@gmail.com
+| 8147842484
+</div>
+<div class="logo-bg"></div>
+
+<div class="sidebar">
+<h3>School ERP</h3>
+<a href="/dashboard">Dashboard</a>
+<a href="/students">Students</a>
+<a href="/expenses">Expenses</a>
+<a href="/logout">Logout</a>
+</div>
+
+<div class="main">
+
+<h2>School Expenses</h2>
+
+<h3>Add Expense</h3>
+
+<form method="post" class="student-form">
+
+<input name="title" placeholder="Expense Title (Electricity, Salary)" required>
+
+<input name="amount" placeholder="Amount" required>
+
+<input name="category" placeholder="Category (Utility, Salary, Maintenance)">
+
+<input type="date" name="date">
+
+<button>Add Expense</button>
+
+</form>
+
+<hr>
+
+<h3>Total Expenses: ₹{{total}}</h3>
+
+<table class="student-table">
+
+<tr>
+<th>Title</th>
+<th>Category</th>
+<th>Amount</th>
+<th>Date</th>
+</tr>
+
+{% for e in expenses %}
+
+<tr>
+<td>{{e.title}}</td>
+<td>{{e.category}}</td>
+<td>₹{{e.amount}}</td>
+<td>{{e.date}}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<title>Dashboard</title>
+
+</head>
+
+<body>
+
+<div class="contact-info">
+| R B AKSHIT
+| akshitrathodi1999@gmail.com
+| 8147842484
+</div>
+
+<div class="logo-bg"></div>
+
+<div class="sidebar">
+<h3>School ERP</h3>
+<a href="/dashboard">Dashboard</a>
+<a href="/students">Students</a>
+<a href="/expenses">Expenses</a>
+<a href="/logout">Logout</a>
+</div>
+
+<div class="main">
+
+<h2>EXCELLENT ENGLISH MEDIUM SCHOOL</h2>
+<h3>Dashboard</h3>
+
+<div style="margin-bottom:15px;">
+<a href="/export_transactions" class="export-btn">
+📥 Export Transactions Excel
+</a>
+</div>
+<h3>Fee Status Overview</h3>
+
+<div style="
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+margin-bottom:20px;
+">
+    <canvas id="financeChart"></canvas>
+</div>
+
+<script>
+new Chart(document.getElementById("financeChart"),{
+
+    type:"bar",
+
+    data:{
+        labels:[
+            "Collected Fee",
+            "Uncollected Fee",
+            "Expenses"
+        ],
+
+        datasets:[{
+            label:"School Finance Overview",
+
+            data:[
+                {{collected}},
+                {{pending}},
+                {{expenses}}
+            ],
+
+            backgroundColor:[
+                "#2563eb",
+                "#dc2626",
+                "#16a34a"
+            ],
+
+            borderRadius:10,
+            borderWidth:1
+        }]
+    },
+
+    options:{
+        responsive:true,
+
+        plugins:{
+            legend:{
+                display:false
+            }
+        },
+
+        scales:{
+            y:{
+                beginAtZero:true
+            }
+        }
+    }
+
+});
+</script>
+<!-- CARDS -->
+
+<div class="dashboard-cards">
+
+<div class="dashboard-card students-card">
+Students<br>{{students}}
+</div>
+
+<div class="dashboard-card collected-card">
+Collected<br>₹{{collected}}
+</div>
+
+<div class="dashboard-card pending-card">
+Uncollected<br>₹{{pending}}
+</div>
+
+<div class="dashboard-card" style="background:#971dcc;">
+Expenses<br>₹{{expenses}}
+</div>
+
+</div>
+
+<!-- TOP PENDING -->
+
+<h3>Top Uncollected Students</h3>
+
+<table class="student-table">
+
+<tr>
+<th>Name</th>
+<th>Class</th>
+<th>Uncollected</th>
+</tr>
+
+{% for s in top_pending %}
+<tr class="high-due">
+<td>{{s.name}}</td>
+<td>{{s.class}}</td>
+<td>₹{{s.due}}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<hr>
+
+<!-- GRAPH -->
+
+<h3>Fee Status Overview</h3>
+
+<canvas id="financeChart"></canvas>
+
+<script>
+new Chart(document.getElementById("financeChart"),{
+type:"bar",
+data:{
+labels:["Collected-Fee","Uncollected-Fee","EXPENSES"],
+datasets:[{
+data:[
+{{collected}},
+{{pending}},{{expenses}}
+],
+backgroundColor:[
+"#3498db",
+"#2ecc71",
+"#e74c3c"
+]
+}]
+}
+});
+</script>
+
+<hr>
+
+<!-- TOP EXPENSES -->
+
+<h3>Top Expenses</h3>
+
+<table class="student-table">
+
+<tr>
+<th>Title</th>
+<th>Category</th>
+<th>Amount</th>
+</tr>
+
+{% for e in top_expenses %}
+<tr>
+<td>{{e.title}}</td>
+<td>{{e.category}}</td>
+<td>₹{{e.amount}}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>

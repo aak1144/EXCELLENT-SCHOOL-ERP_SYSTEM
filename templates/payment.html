@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css">
+<title>Payment</title>
+</head>
+
+<body>
+
+<div class="logo-bg"></div>
+
+<div class="sidebar">
+<h3>School ERP</h3>
+<a href="/dashboard">Dashboard</a>
+<a href="/students">Students</a>
+<a href="/logout">Logout</a>
+</div>
+
+<div class="main">
+
+<h2>Payment - {{student.name}}</h2>
+
+<p><b>Total Fee :</b> ₹{{student.total_fee}}</p>
+<p><b>Total Paid :</b> ₹{{student.paid}}</p>
+<p><b>Remaining Balance :</b> ₹{{balance}}</p>
+
+<form method="post" class="payment-form">
+
+<label><b>Today's Payment Amount</b></label>
+<input type="number" name="amount" required>
+
+<label>Date</label>
+<input type="date" name="date">
+
+<button type="submit">Submit Payment</button>
+
+</form>
+
+</div>
+
+</body>
+</html>
