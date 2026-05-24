@@ -7,7 +7,9 @@ import openpyxl
 
 app = Flask(__name__)
 app.secret_key="school_erp_secure_key_2026"
-DB="school.db"
+import os
+
+DB = os.path.join(os.getcwd(), "school.db")
 
 
 def safe_int(v):
