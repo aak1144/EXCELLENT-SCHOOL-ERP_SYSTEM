@@ -1,6 +1,6 @@
 flask
-reportlab
 werkzeug
 gunicorn
 pandas
 openpyxl
+reportlab

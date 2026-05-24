@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 node_modules
 dist
 build
 .cache
+=======
+node_modules
+dist
+build
+.cache
+>>>>>>> 2960e1dd816520dde9c4f831fe6b259655cc4576
 .env

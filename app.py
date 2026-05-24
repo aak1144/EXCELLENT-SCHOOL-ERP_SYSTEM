@@ -2,12 +2,22 @@ from flask import Flask,render_template,request,redirect,session,g,send_file,fla
 import sqlite3,datetime,shutil
 from werkzeug.security import generate_password_hash,check_password_hash
 import pandas as pd
+<<<<<<< HEAD
+=======
+import os
+>>>>>>> 2960e1dd816520dde9c4f831fe6b259655cc4576
 import webbrowser
 import openpyxl
 
 app = Flask(__name__)
 app.secret_key="school_erp_secure_key_2026"
+<<<<<<< HEAD
 DB="school.db"
+=======
+import os
+
+DB = os.path.join(os.getcwd(), "school.db")
+>>>>>>> 2960e1dd816520dde9c4f831fe6b259655cc4576
 
 
 def safe_int(v):
@@ -31,6 +41,10 @@ def close_db(exception):
 # ---------------- INIT DB ----------------
 def init_db():
     db = sqlite3.connect(DB)
+<<<<<<< HEAD
+=======
+    db.execute("PRAGMA journal_mode=WAL")
+>>>>>>> 2960e1dd816520dde9c4f831fe6b259655cc4576
     c = db.cursor()
 
     c.execute("""CREATE TABLE IF NOT EXISTS admins(
@@ -355,6 +369,11 @@ def export_transactions():
         as_attachment=True
     )
 # ---------------- RUN ----------------
+<<<<<<< HEAD
 if __name__=="__main__":
     webbrowser.open("http://127.0.0.1:5000")
     app.run(debug=False)
+=======
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+>>>>>>> 2960e1dd816520dde9c4f831fe6b259655cc4576
