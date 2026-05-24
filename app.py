@@ -34,6 +34,7 @@ def close_db(exception):
 # ---------------- INIT DB ----------------
 def init_db():
     db = sqlite3.connect(DB)
+    db.execute("PRAGMA journal_mode=WAL")
     c = db.cursor()
 
     c.execute("""CREATE TABLE IF NOT EXISTS admins(
